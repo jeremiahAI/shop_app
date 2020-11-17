@@ -52,4 +52,18 @@ class Cart with ChangeNotifier {
     _items.clear();
     notifyListeners();
   }
+
+  removeSingleItem(Product product) {
+    if (_items.containsKey(product.id)) {
+      if (_items[product.id].quantity == 1)
+        _items.remove(product.id);
+      else
+        _items.update(
+            product.id,
+            (value) =>
+                CartItem.fromProduct(product, quantity: value.quantity - 1));
+
+      notifyListeners();
+    }
+  }
 }
