@@ -3,12 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/providers/product.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 
+import 'cart.dart';
+
 class ProductItem extends StatelessWidget {
   // ProductItem(this.product);
 
   @override
   Widget build(BuildContext context) {
     final Product product = Provider.of<Product>(context, listen: false);
+    final Cart cart = Provider.of<Cart>(context, listen: false);
 
     return Card(
       elevation: 4,
@@ -41,7 +44,12 @@ class ProductItem extends StatelessWidget {
             ),
             trailing: IconButton(
               icon: Icon(Icons.shopping_cart),
-              onPressed: () {},
+              onPressed: () {
+                cart.addItem(product);
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text(product.title + " added to cart"),
+                ));
+              },
               color: Theme.of(context).accentColor,
             ),
             // subtitle: Text(product.description),
