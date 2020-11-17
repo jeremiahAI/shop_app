@@ -8,7 +8,7 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Product product = Provider.of<Product>(context);
+    final Product product = Provider.of<Product>(context, listen: false);
 
     return Card(
       elevation: 4,
@@ -30,11 +30,14 @@ class ProductItem extends StatelessWidget {
               product.title,
               textAlign: TextAlign.center,
             ),
-            leading: IconButton(
-              icon: Icon(
-                  product.isFavorite ? Icons.favorite : Icons.favorite_border),
-              onPressed: () => product.toggleFavoriteStatus(),
-              color: Theme.of(context).accentColor,
+            leading: Consumer<Product>(
+              builder: (_, product, child) => IconButton(
+                icon: Icon(product.isFavorite
+                    ? Icons.favorite
+                    : Icons.favorite_border),
+                onPressed: () => product.toggleFavoriteStatus(),
+                color: Theme.of(context).accentColor,
+              ),
             ),
             trailing: IconButton(
               icon: Icon(Icons.shopping_cart),
