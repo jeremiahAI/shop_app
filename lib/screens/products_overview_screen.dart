@@ -25,7 +25,11 @@ class ProductsGridWidget extends StatelessWidget {
 
     return GridView.builder(
       itemBuilder: (context, index) {
-        return ProductItem(products[index]);
+        return ChangeNotifierProvider.value(
+            value: products[index],
+            child: ProductItem(
+                // products[index],
+                ));
       },
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
