@@ -18,6 +18,8 @@ class _UserProductItemState extends State<UserProductItem> {
 
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold.of(context);
+
     return ListTile(
       title: Text(widget.item.title),
       leading: CircleAvatar(
@@ -49,7 +51,12 @@ class _UserProductItemState extends State<UserProductItem> {
                       });
                       Provider.of<Products>(context, listen: false)
                           .deleteProduct(widget.item.id)
-                          .then((value) => setState(() => _isDeleting = false));
+                          .catchError((error) {
+                        scaffold.showSnackBar(SnackBar(
+                          content: Text('Failed to delete'),
+                          duration: Duration(seconds: 2),
+                        ));
+                      }).then((value) => setState(() => _isDeleting = false));
                     },
                     color: Theme.of(context).errorColor,
                   )

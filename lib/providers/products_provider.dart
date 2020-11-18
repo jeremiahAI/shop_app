@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:shop_app/models/http_exception.dart';
 import 'package:shop_app/providers/product.dart';
 
 class Products with ChangeNotifier {
@@ -106,8 +107,12 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    await delete("https://shop-app-d4584.firebaseio.com/products/$id.json");
-    await fetchAndSetProducts();
+    final response =
+        await delete("https://shop-app-d4584.firebaseio.com/products/$id.json");
+    if (response.statusCode >= 400) {
+      throw HttpException("Could not delete product");
+    } else
+      await fetchAndSetProducts();
   }
 
   void findById(String id) => _items.firstWhere((element) => element.id == id);
