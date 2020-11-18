@@ -14,6 +14,14 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
+  Product copy({String id, title, description, imageUrl, price}) => Product(
+        id: id != null ? id : this.id,
+        title: title != null ? title : this.title,
+        description: description != null ? description : this.description,
+        imageUrl: imageUrl != null ? imageUrl : this.imageUrl,
+        price: price != null ? price : this.price,
+      );
+
   toggleFavoriteStatus() {
     isFavorite = !isFavorite;
     notifyListeners();

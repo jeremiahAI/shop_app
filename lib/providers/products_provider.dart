@@ -45,7 +45,12 @@ class Products with ChangeNotifier {
     return [..._items.where((element) => element.isFavorite).toList()];
   }
 
-  void addProduct() {}
+  addProduct(Product product) {
+    var newProd = product.copy(id: DateTime.now().toString());
+    _items.insert(0, newProd);
+
+    notifyListeners();
+  }
 
   void findById(String id) => _items.firstWhere((element) => element.id == id);
 }
