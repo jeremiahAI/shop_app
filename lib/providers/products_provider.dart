@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:shop_app/providers/product.dart';
 
 class Products with ChangeNotifier {
@@ -46,11 +49,24 @@ class Products with ChangeNotifier {
   }
 
   addProduct(Product product) {
-    var newProd = product.copy(
-        id: product.id != null ? product.id : DateTime.now().toString());
-    _items.insert(0, newProd);
+    const url = "https://shop-app-d4584.firebaseio.com/products.json";
 
-    notifyListeners();
+    post(
+      url,
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'imageUrl': product.imageUrl,
+        'price': product.price,
+        'isFavorite': product.isFavorite,
+      }),
+    ).then((response) {
+      var newProd = product.copy(
+        id: json.decode(response.body)['name'],
+      );
+      _items.insert(0, newProd);
+      notifyListeners();
+    });
   }
 
   updateProduct(Product product) {
