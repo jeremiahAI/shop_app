@@ -21,6 +21,7 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
   _saveForm() async {
     if (_form.currentState.validate()) {
       _form.currentState.save();
+
       setState(() {
         isLoading = true;
       });
@@ -44,18 +45,19 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                     ],
                   ));
         } finally {
-          setState(() {
-            isLoading = false;
-          });
-          Navigator.of(context).pop();
+          // setState(() {
+          //   isLoading = false;
+          // });
+          // Navigator.of(context).pop();
         }
       } else {
-        productsProvider.updateProduct(product);
-        setState(() {
-          isLoading = false;
-        });
-        Navigator.of(context).pop();
+        // Todo: error handling
+        await productsProvider.updateProduct(product);
       }
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.of(context).pop();
     }
   }
 
