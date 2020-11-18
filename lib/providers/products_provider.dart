@@ -5,6 +5,8 @@ import 'package:http/http.dart';
 import 'package:shop_app/providers/product.dart';
 
 class Products with ChangeNotifier {
+  static const _productsUrl =
+      "https://shop-app-d4584.firebaseio.com/products.json";
   List<Product> _items = [
     Product(
       id: 'p1',
@@ -49,10 +51,9 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = "https://shop-app-d4584.firebaseio.com/products.json";
     try {
       final response = await post(
-        url,
+        _productsUrl,
         body: json.encode({
           'title': product.title,
           'description': product.description,
@@ -70,6 +71,31 @@ class Products with ChangeNotifier {
     } catch (error) {
       print(error);
       throw (error);
+    }
+  }
+
+  Future<void> fetchAndSetProducts() async {
+    // Ideally, error handling should be here
+    try {
+      var response = await get(_productsUrl);
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      List<Product> loadedProducts = [];
+
+      data.forEach((id, prodData) {
+        loadedProducts.add(Product(
+          id: id,
+          title: prodData['title'],
+          description: prodData['description'],
+          price: prodData['price'],
+          isFavorite: prodData['isFavorite'],
+          imageUrl: prodData['imageUrl'],
+        ));
+      });
+
+      _items = loadedProducts;
+      notifyListeners();
+    } catch (error) {
+      throw error;
     }
   }
 
