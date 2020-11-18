@@ -78,16 +78,18 @@ class Products with ChangeNotifier {
       final data = json.decode(response.body) as Map<String, dynamic>;
       List<Product> loadedProducts = [];
 
-      data.forEach((id, prodData) {
-        loadedProducts.add(Product(
-          id: id,
-          title: prodData['title'],
-          description: prodData['description'],
-          price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
-          imageUrl: prodData['imageUrl'],
-        ));
-      });
+      if (data != null) {
+        data.forEach((id, prodData) {
+          loadedProducts.add(Product(
+            id: id,
+            title: prodData['title'],
+            description: prodData['description'],
+            price: prodData['price'],
+            isFavorite: prodData['isFavorite'],
+            imageUrl: prodData['imageUrl'],
+          ));
+        });
+      }
 
       _items = loadedProducts;
       notifyListeners();

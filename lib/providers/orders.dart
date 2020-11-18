@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:shop_app/providers/cart.dart';
 
 class Orders with ChangeNotifier {
@@ -23,6 +24,39 @@ class Orders with ChangeNotifier {
 
     _orders.insert(0, order.copy(id: json.decode(response.body)['name']));
     notifyListeners();
+  }
+
+  Future<void> fetchAndSetOrders() async {
+    // Ideally, error handling should be here
+    // try {
+    var response = await get(
+      "$ordersFirebasePathUrl/.json",
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    List<Order> loadedOrders = [];
+
+    if (data != null) {
+      data.forEach((id, ordersData) {
+        loadedOrders.add(Order(
+          id: id,
+          amount: ordersData['amount'],
+          dateTime: DateTime.parse(ordersData['dateTime']),
+          products: (ordersData['products'] as List<dynamic>)
+              .map((element) => CartItem(
+                  id: element['id'],
+                  title: element['title'],
+                  quantity: element['quantity'],
+                  price: element['price']))
+              .toList(),
+        ));
+      });
+    }
+
+    _orders = loadedOrders;
+    notifyListeners();
+    // } catch (error) {
+    //   throw error;
+    // }
   }
 }
 
