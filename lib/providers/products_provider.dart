@@ -48,25 +48,29 @@ class Products with ChangeNotifier {
     return [..._items.where((element) => element.isFavorite).toList()];
   }
 
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     const url = "https://shop-app-d4584.firebaseio.com/products.json";
+    try {
+      final response = await post(
+        url,
+        body: json.encode({
+          'title': product.title,
+          'description': product.description,
+          'imageUrl': product.imageUrl,
+          'price': product.price,
+          'isFavorite': product.isFavorite,
+        }),
+      );
 
-    return post(
-      url,
-      body: json.encode({
-        'title': product.title,
-        'description': product.description,
-        'imageUrl': product.imageUrl,
-        'price': product.price,
-        'isFavorite': product.isFavorite,
-      }),
-    ).then((response) {
       var newProd = product.copy(
         id: json.decode(response.body)['name'],
       );
       _items.insert(0, newProd);
       notifyListeners();
-    });
+    } catch (error) {
+      print(error);
+      throw (error);
+    }
   }
 
   updateProduct(Product product) {

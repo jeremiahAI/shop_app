@@ -18,7 +18,7 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
 
   Product product;
 
-  _saveForm() {
+  _saveForm() async {
     if (_form.currentState.validate()) {
       _form.currentState.save();
       setState(() {
@@ -28,8 +28,10 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
       final productsProvider = Provider.of<Products>(context, listen: false);
 
       if (product.id == null) {
-        productsProvider.addProduct(product).catchError((error) {
-          return showDialog(
+        try {
+          await productsProvider.addProduct(product);
+        } catch (error) {
+          await showDialog(
               context: context,
               builder: (_) => AlertDialog(
                     title: Text("An error occurred"),
@@ -41,12 +43,12 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                       )
                     ],
                   ));
-        }).then((_) {
+        } finally {
           setState(() {
             isLoading = false;
           });
           Navigator.of(context).pop();
-        });
+        }
       } else {
         productsProvider.updateProduct(product);
         setState(() {
