@@ -38,19 +38,7 @@ class CartScreen extends StatelessWidget {
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  FlatButton(
-                    child: Text(
-                      "ORDER NOW",
-                    ),
-                    onPressed: () {
-                      orders.addOrder(
-                        cart.items.values.toList(),
-                        cart.totalAmount,
-                      );
-                      cart.clear();
-                    },
-                    textColor: Theme.of(context).primaryColor,
-                  )
+                  OrderButton(orders: orders, cart: cart)
                 ],
               ),
             ),
@@ -67,6 +55,54 @@ class CartScreen extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key key,
+    @required this.orders,
+    @required this.cart,
+  }) : super(key: key);
+
+  final Orders orders;
+  final Cart cart;
+
+  @override
+  _OrderButtonState createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  var _orderInProgress = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      child: _orderInProgress
+          ? CircularProgressIndicator()
+          : Text(
+              "ORDER NOW",
+            ),
+      onPressed: widget.cart.totalAmount <= 0 || _orderInProgress
+          ? null
+          : () {
+              setState(() {
+                _orderInProgress = true;
+              });
+              widget.orders
+                  .addOrder(
+                widget.cart.items.values.toList(),
+                widget.cart.totalAmount,
+              )
+                  .then((value) {
+                setState(() {
+                  _orderInProgress = false;
+                });
+                widget.cart.clear();
+              });
+            },
+      textColor: Theme.of(context).primaryColor,
     );
   }
 }
