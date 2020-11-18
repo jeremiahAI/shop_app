@@ -105,9 +105,9 @@ class Products with ChangeNotifier {
     }
   }
 
-  deleteProduct(String id) {
-    _items.removeWhere((element) => element.id == id);
-    notifyListeners();
+  Future<void> deleteProduct(String id) async {
+    await delete("https://shop-app-d4584.firebaseio.com/products/$id.json");
+    await fetchAndSetProducts();
   }
 
   void findById(String id) => _items.firstWhere((element) => element.id == id);
