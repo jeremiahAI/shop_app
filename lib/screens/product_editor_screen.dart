@@ -15,13 +15,16 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
   final _imageUrlFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
 
-  Product product =
-      Product(id: null, title: "", description: "", imageUrl: "", price: 0);
+  Product product;
 
   _saveForm() {
     if (_form.currentState.validate()) {
       _form.currentState.save();
-      Provider.of<Products>(context, listen: false).addProduct(product);
+      final productsProvider = Provider.of<Products>(context, listen: false);
+      if (product.id == null)
+        productsProvider.addProduct(product);
+      else
+        productsProvider.updateProduct(product);
       Navigator.of(context).pop();
     }
   }
@@ -30,6 +33,29 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
   void initState() {
     super.initState();
     _imageUrlFocusNode.addListener(_updateImageUrl);
+  }
+
+  var _isLoaded = false;
+
+  @override
+  void didChangeDependencies() {
+    if (!_isLoaded) {
+      var suppliedProduct =
+          ModalRoute.of(context).settings.arguments as Product;
+      product = suppliedProduct != null
+          ? suppliedProduct
+          : Product(
+              id: null,
+              title: "",
+              description: "",
+              imageUrl: "",
+              price: 0,
+            );
+
+      _imageUrlController.text = product.imageUrl;
+      _isLoaded = true;
+    }
+    super.didChangeDependencies();
   }
 
   @override
@@ -60,6 +86,7 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: product.title,
                   decoration: InputDecoration(labelText: "Title"),
                   textInputAction: TextInputAction.next,
                   textCapitalization: TextCapitalization.words,
@@ -70,6 +97,8 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                       val.isEmpty ? "Please enter a title." : null,
                 ),
                 TextFormField(
+                  initialValue:
+                      product.price == 0 ? "" : product.price.toString(),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(labelText: "Price"),
                   textInputAction: TextInputAction.next,
@@ -86,6 +115,7 @@ class _ProductEditorScreenState extends State<ProductEditorScreen> {
                   },
                 ),
                 TextFormField(
+                  initialValue: product.description,
                   decoration: InputDecoration(labelText: "Description"),
                   // textInputAction: TextInputAction.next,
                   textCapitalization: TextCapitalization.sentences,

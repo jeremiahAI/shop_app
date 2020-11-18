@@ -46,9 +46,20 @@ class Products with ChangeNotifier {
   }
 
   addProduct(Product product) {
-    var newProd = product.copy(id: DateTime.now().toString());
+    var newProd = product.copy(
+        id: product.id != null ? product.id : DateTime.now().toString());
     _items.insert(0, newProd);
 
+    notifyListeners();
+  }
+
+  updateProduct(Product product) {
+    var idx = _items.indexWhere((element) => element.id == product.id);
+    if (idx >= 0) {
+      var newProd = product.copy(
+          id: product.id != null ? product.id : DateTime.now().toString());
+      _items[idx] = newProd;
+    }
     notifyListeners();
   }
 
