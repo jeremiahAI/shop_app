@@ -6,8 +6,8 @@ import 'package:shop_app/models/http_exception.dart';
 import 'package:shop_app/providers/product.dart';
 
 class Products with ChangeNotifier {
-  static const _productsUrl =
-      "https://shop-app-d4584.firebaseio.com/products.json";
+  static const productsFirebasePathUrl =
+      "https://shop-app-d4584.firebaseio.com/products";
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -54,7 +54,7 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product product) async {
     try {
       final response = await post(
-        _productsUrl,
+        "$productsFirebasePathUrl/.json",
         body: product.toJson(),
       );
 
@@ -72,7 +72,9 @@ class Products with ChangeNotifier {
   Future<void> fetchAndSetProducts() async {
     // Ideally, error handling should be here
     try {
-      var response = await get(_productsUrl);
+      var response = await get(
+        "$productsFirebasePathUrl/.json",
+      );
       final data = json.decode(response.body) as Map<String, dynamic>;
       List<Product> loadedProducts = [];
 
@@ -98,7 +100,7 @@ class Products with ChangeNotifier {
     var idx = _items.indexWhere((element) => element.id == product.id);
     if (idx >= 0) {
       var newProd = product.copy(id: product.id);
-      patch("https://shop-app-d4584.firebaseio.com/products/${product.id}.json",
+      patch("$productsFirebasePathUrl/${product.id}.json",
           body: newProd.toJson());
 
       _items[idx] = newProd;
@@ -107,8 +109,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final response =
-        await delete("https://shop-app-d4584.firebaseio.com/products/$id.json");
+    final response = await delete("$productsFirebasePathUrl/$id.json");
     if (response.statusCode >= 400) {
       throw HttpException("Could not delete product");
     } else
