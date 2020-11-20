@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,8 @@ import 'package:shop_app/models/http_exception.dart';
 class Auth with ChangeNotifier {
   String _token, _userId;
   DateTime _expiry;
+  Timer _authTimer;
+
   static const String webApiKey = "AIzaSyAhDp8ZUDFqArD6USlMVT2pMXFkoT-ZGC4";
   static const _signupEndpointUrl =
       "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$webApiKey";
@@ -42,9 +45,18 @@ class Auth with ChangeNotifier {
         Duration(seconds: int.parse(responseData['expiresIn'])),
       );
       notifyListeners();
+      _autoLogout();
     } catch (error) {
       throw error;
     }
+  }
+
+  Future<void> logout() {
+    _token = null;
+    _expiry = null;
+    _expiry = null;
+    if (_authTimer != null) _authTimer.cancel();
+    notifyListeners();
   }
 
   Future<void> signUp(String email, String password) async =>
@@ -52,4 +64,14 @@ class Auth with ChangeNotifier {
 
   Future<void> signIn(String email, String password) async =>
       _authenticate(email, password, _signInEndpointUrl);
+
+  _autoLogout() {
+    if (_authTimer != null) _authTimer.cancel();
+
+    _authTimer = Timer(
+        Duration(
+          seconds: _expiry.difference(DateTime.now()).inSeconds,
+        ),
+        logout);
+  }
 }
