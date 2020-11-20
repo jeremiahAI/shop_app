@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:shop_app/models/http_exception.dart';
+import 'package:shop_app/providers/auth.dart';
 import 'package:shop_app/providers/products_provider.dart';
 
 class Product with ChangeNotifier {
@@ -27,13 +28,13 @@ class Product with ChangeNotifier {
         price: price != null ? price : this.price,
       );
 
-  toggleFavoriteStatus() async {
+  toggleFavoriteStatus(Auth auth) async {
     isFavorite = !isFavorite;
     notifyListeners();
     try {
-      final response = await patch(
-          "${Products.productsFirebasePathUrl}/$id.json",
-          body: this.toJson());
+      final response = await put(
+          "https://shop-app-d4584.firebaseio.com/userFavorites/${auth.userId}/$id.json?auth=${auth.token}",
+          body: json.encode(isFavorite));
       if (response.statusCode >= 400)
         throw HttpException("Unable to toggle favorite status");
     } catch (error) {
@@ -47,6 +48,6 @@ class Product with ChangeNotifier {
         'description': description,
         'imageUrl': imageUrl,
         'price': price,
-        'isFavorite': isFavorite,
+        // 'isFavorite': isFavorite,
       });
 }

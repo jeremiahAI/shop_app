@@ -45,6 +45,8 @@ class Products with ChangeNotifier {
 
   String _token;
 
+  String _userId;
+
   List<Product> get items {
     return [..._items];
   }
@@ -79,19 +81,23 @@ class Products with ChangeNotifier {
       );
       final data = json.decode(response.body) as Map<String, dynamic>;
       List<Product> loadedProducts = [];
+      if (data == null) return;
 
-      if (data != null) {
-        data.forEach((id, prodData) {
-          loadedProducts.add(Product(
-            id: id,
-            title: prodData['title'],
-            description: prodData['description'],
-            price: prodData['price'],
-            isFavorite: prodData['isFavorite'],
-            imageUrl: prodData['imageUrl'],
-          ));
-        });
-      }
+      final productFavoriteData = await get(
+          "https://shop-app-d4584.firebaseio.com/userFavorites/$_userId.json?auth=$_token");
+      final favData =
+          json.decode(productFavoriteData.body) as Map<String, dynamic>;
+
+      data.forEach((id, prodData) {
+        loadedProducts.add(Product(
+          id: id,
+          title: prodData['title'],
+          description: prodData['description'],
+          price: prodData['price'],
+          isFavorite: favData == null ? false : favData[id] ?? false,
+          imageUrl: prodData['imageUrl'],
+        ));
+      });
 
       _items = loadedProducts;
       notifyListeners();
@@ -126,4 +132,6 @@ class Products with ChangeNotifier {
   setToken(String token) {
     this._token = token;
   }
+
+  setUserId(String userId) => this._userId = userId;
 }
