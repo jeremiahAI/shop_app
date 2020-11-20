@@ -13,7 +13,14 @@ class Auth with ChangeNotifier {
   static const _signInEndpointUrl =
       "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$webApiKey";
 
-  Future<void> _autheticate(String email, String password, String url) async {
+  bool get isAuthenticated => token != null;
+
+  String get token =>
+      _expiry != null && _expiry.isAfter(DateTime.now()) && _token != null
+          ? _token
+          : null;
+
+  Future<void> _authenticate(String email, String password, String url) async {
     try {
       final response = await post(
         url,
@@ -26,14 +33,21 @@ class Auth with ChangeNotifier {
       final responseData = json.decode(response.body);
       if (responseData['error'] != null)
         throw HttpException(responseData['error']['message']);
+
+      _token = responseData['idToken'];
+      _userId = responseData['localId'];
+      _expiry = DateTime.now().add(
+        Duration(seconds: int.parse(responseData['expiresIn'])),
+      );
+      notifyListeners();
     } catch (error) {
       throw error;
     }
   }
 
   Future<void> signUp(String email, String password) async =>
-      _autheticate(email, password, _signupEndpointUrl);
+      _authenticate(email, password, _signupEndpointUrl);
 
   Future<void> signIn(String email, String password) async =>
-      _autheticate(email, password, _signInEndpointUrl);
+      _authenticate(email, password, _signInEndpointUrl);
 }
