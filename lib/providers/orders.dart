@@ -12,6 +12,12 @@ class Orders with ChangeNotifier {
 
   List<Order> get orders => [..._orders];
 
+  String _token;
+
+  setToken(String token) {
+    this._token = token;
+  }
+
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     var order = Order(
         id: DateTime.now().toString(),
@@ -19,8 +25,8 @@ class Orders with ChangeNotifier {
         products: cartProducts,
         dateTime: DateTime.now());
 
-    final response =
-        await post("$ordersFirebasePathUrl.json", body: order.toJson());
+    final response = await post("$ordersFirebasePathUrl.json?auth=$_token",
+        body: order.toJson());
 
     _orders.insert(0, order.copy(id: json.decode(response.body)['name']));
     notifyListeners();
@@ -30,7 +36,7 @@ class Orders with ChangeNotifier {
     // Ideally, error handling should be here
     // try {
     var response = await get(
-      "$ordersFirebasePathUrl/.json",
+      "$ordersFirebasePathUrl/.json?auth=$_token",
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
     List<Order> loadedOrders = [];

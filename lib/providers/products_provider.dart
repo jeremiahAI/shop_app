@@ -43,6 +43,8 @@ class Products with ChangeNotifier {
     // ),
   ];
 
+  String _token;
+
   List<Product> get items {
     return [..._items];
   }
@@ -54,7 +56,7 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product product) async {
     try {
       final response = await post(
-        "$productsFirebasePathUrl/.json",
+        "$productsFirebasePathUrl/.json?auth=$_token",
         body: product.toJson(),
       );
 
@@ -73,7 +75,7 @@ class Products with ChangeNotifier {
     // Ideally, error handling should be here
     try {
       var response = await get(
-        "$productsFirebasePathUrl/.json",
+        "$productsFirebasePathUrl/.json?auth=$_token",
       );
       final data = json.decode(response.body) as Map<String, dynamic>;
       List<Product> loadedProducts = [];
@@ -102,7 +104,7 @@ class Products with ChangeNotifier {
     var idx = _items.indexWhere((element) => element.id == product.id);
     if (idx >= 0) {
       var newProd = product.copy(id: product.id);
-      patch("$productsFirebasePathUrl/${product.id}.json",
+      patch("$productsFirebasePathUrl/${product.id}.json?auth=$_token",
           body: newProd.toJson());
 
       _items[idx] = newProd;
@@ -111,7 +113,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final response = await delete("$productsFirebasePathUrl/$id.json");
+    final response =
+        await delete("$productsFirebasePathUrl/$id.json?auth=$_token");
     if (response.statusCode >= 400) {
       throw HttpException("Could not delete product");
     } else
@@ -119,4 +122,8 @@ class Products with ChangeNotifier {
   }
 
   void findById(String id) => _items.firstWhere((element) => element.id == id);
+
+  setToken(String token) {
+    this._token = token;
+  }
 }
