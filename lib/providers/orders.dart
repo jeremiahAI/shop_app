@@ -10,6 +10,8 @@ class Orders with ChangeNotifier {
       "https://shop-app-d4584.firebaseio.com/orders";
   List<Order> _orders = [];
 
+  String _userId;
+
   List<Order> get orders => [..._orders];
 
   String _token;
@@ -25,7 +27,8 @@ class Orders with ChangeNotifier {
         products: cartProducts,
         dateTime: DateTime.now());
 
-    final response = await post("$ordersFirebasePathUrl.json?auth=$_token",
+    final response = await post(
+        "$ordersFirebasePathUrl/$_userId.json?auth=$_token",
         body: order.toJson());
 
     _orders.insert(0, order.copy(id: json.decode(response.body)['name']));
@@ -36,7 +39,7 @@ class Orders with ChangeNotifier {
     // Ideally, error handling should be here
     // try {
     var response = await get(
-      "$ordersFirebasePathUrl/.json?auth=$_token",
+      "$ordersFirebasePathUrl/$_userId.json?auth=$_token",
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
     List<Order> loadedOrders = [];
@@ -64,6 +67,8 @@ class Orders with ChangeNotifier {
     //   throw error;
     // }
   }
+
+  setUserId(String userId) => this._userId = userId;
 }
 
 class Order {
