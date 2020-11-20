@@ -11,7 +11,7 @@ class UserProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final products = Provider.of<Products>(context);
+    final products = Provider.of<Products>(context, listen: false);
 
     return Scaffold(
         drawer: AppDrawer(),
@@ -25,19 +25,33 @@ class UserProductsScreen extends StatelessWidget {
             )
           ],
         ),
-        body: RefreshIndicator(
-          onRefresh: () {
-            return products.fetchAndSetProducts();
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListView.builder(
-              itemBuilder: (BuildContext context, int index) => Column(
-                children: [UserProductItem(products.items[index]), Divider()],
-              ),
-              itemCount: products.items.length,
-            ),
-          ),
+        body: FutureBuilder(
+          future: products.fetchAndSetProducts(filterByUser: true),
+          builder: (ctx, snapshot) =>
+              snapshot.connectionState == ConnectionState.waiting
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () {
+                        return products.fetchAndSetProducts(filterByUser: true);
+                      },
+                      child: Consumer<Products>(
+                        builder: (ctx, products, _) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                            itemBuilder: (BuildContext context, int index) =>
+                                Column(
+                              children: [
+                                UserProductItem(products.items[index]),
+                                Divider()
+                              ],
+                            ),
+                            itemCount: products.items.length,
+                          ),
+                        ),
+                      ),
+                    ),
         ));
   }
 }

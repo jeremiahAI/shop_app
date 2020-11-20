@@ -59,7 +59,7 @@ class Products with ChangeNotifier {
     try {
       final response = await post(
         "$productsFirebasePathUrl/.json?auth=$_token",
-        body: product.toJson(),
+        body: product.toJsonForUpload(_userId),
       );
 
       var newProd = product.copy(
@@ -73,11 +73,11 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts({bool filterByUser = false}) async {
     // Ideally, error handling should be here
     try {
       var response = await get(
-        "$productsFirebasePathUrl/.json?auth=$_token",
+        "$productsFirebasePathUrl/.json?auth=$_token${filterByUser ? '&orderBy="creatorId"&equalTo="$_userId"' : ""}",
       );
       final data = json.decode(response.body) as Map<String, dynamic>;
       List<Product> loadedProducts = [];
@@ -111,7 +111,7 @@ class Products with ChangeNotifier {
     if (idx >= 0) {
       var newProd = product.copy(id: product.id);
       patch("$productsFirebasePathUrl/${product.id}.json?auth=$_token",
-          body: newProd.toJson());
+          body: newProd.toJsonForUpload(_userId));
 
       _items[idx] = newProd;
       notifyListeners();

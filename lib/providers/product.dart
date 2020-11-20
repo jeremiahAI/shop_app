@@ -43,11 +43,11 @@ class Product with ChangeNotifier {
     }
   }
 
-  String toJson() => json.encode({
+  String toJsonForUpload(String userId) => json.encode({
         'title': title,
         'description': description,
         'imageUrl': imageUrl,
         'price': price,
-        // 'isFavorite': isFavorite,
+        'creatorId': userId,
       });
 }
