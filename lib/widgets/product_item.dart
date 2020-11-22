@@ -24,8 +24,9 @@ class ProductItem extends StatelessWidget {
           child: GestureDetector(
             onTap: () => Navigator.of(context)
                 .pushNamed(ProductDetailsScreen.routeName, arguments: product),
-            child: Image.network(
-              product.imageUrl,
+            child: FadeInImage(
+              placeholder: AssetImage('images/product-placeholder.png'),
+              image: NetworkImage(product.imageUrl),
               fit: BoxFit.cover,
             ),
           ),
