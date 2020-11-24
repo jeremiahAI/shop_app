@@ -8,6 +8,7 @@ import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/product_editor_screen.dart';
 import 'package:shop_app/screens/splash_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
+import 'package:shop_app/utils/custom_route.dart';
 
 import './screens/product_detail_screen.dart';
 import './screens/products_overview_screen.dart';
@@ -43,6 +44,10 @@ class MyApp extends StatelessWidget {
                 theme: ThemeData(
                     fontFamily: 'Lato',
                     primarySwatch: Colors.purple,
+                    pageTransitionsTheme: PageTransitionsTheme(builders: {
+                      TargetPlatform.android: CustomPageTransitionBuilder(),
+                      TargetPlatform.iOS: CustomPageTransitionBuilder(),
+                    }),
                     accentColor: Colors.deepOrange),
                 home: auth.isAuthenticated
                     ? ProductsOverviewScreen()
