@@ -1,5 +1,7 @@
 library shop_repository_core;
 
+export 'src/auth.dart';
+export 'src/constants.dart';
 export 'src/entities/cart_item_entity.dart';
 export 'src/entities/order_entity.dart';
 export 'src/entities/product_entity.dart';

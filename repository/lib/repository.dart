@@ -8,9 +8,6 @@ import 'package:rxdart/subjects.dart';
 import 'package:shop_repository_core/shop_repository_core.dart';
 
 class ReactiveProductsRepositoryImpl extends ReactiveProductsRepository {
-  static const productsFirebasePathUrl =
-      "https://shop-app-d4584.firebaseio.com/products";
-
   final BehaviorSubject<List<ProductEntity>> _productsSubject;
   bool _loaded = false;
 
@@ -25,7 +22,7 @@ class ReactiveProductsRepositoryImpl extends ReactiveProductsRepository {
     try {
       product.creatorId = _creatorId;
       final response = await post(
-        "$productsFirebasePathUrl/.json?auth=$_token",
+        "${Constants.productsFirebasePathUrl}/.json?auth=$_token",
         body: product.toJson(),
       );
 
@@ -42,8 +39,8 @@ class ReactiveProductsRepositoryImpl extends ReactiveProductsRepository {
 
   @override
   Future<void> deleteProduct(String id) async {
-    final response =
-        await delete("$productsFirebasePathUrl/$id.json?auth=$_token");
+    final response = await delete(
+        "${Constants.productsFirebasePathUrl}/$id.json?auth=$_token");
     if (response.statusCode >= 400) {
       throw HttpException("Could not delete product");
     } else
@@ -72,7 +69,7 @@ class ReactiveProductsRepositoryImpl extends ReactiveProductsRepository {
     // Ideally, error handling should be here
     try {
       var response = await get(
-        "$productsFirebasePathUrl/.json?auth=$_token",
+        "${Constants.productsFirebasePathUrl}/.json?auth=$_token",
       );
       final data = json.decode(response.body) as Map<String, dynamic>;
       List<ProductEntity> loadedProducts = [];
@@ -109,7 +106,8 @@ class ReactiveProductsRepositoryImpl extends ReactiveProductsRepository {
         .indexWhere((element) => element.id == product.id);
     if (idx >= 0) {
       var newProd = product.copy(id: product.id)..creatorId = _creatorId;
-      patch("$productsFirebasePathUrl/${product.id}.json?auth=$_token",
+      patch(
+          "${Constants.productsFirebasePathUrl}/${product.id}.json?auth=$_token",
           body: newProd.toJson());
 
       _productsSubject.add(_productsSubject.value..[idx] = newProd);
