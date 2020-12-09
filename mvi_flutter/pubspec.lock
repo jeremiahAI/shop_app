@@ -493,7 +493,7 @@ packages:
     source: hosted
     version: "0.2.3"
   shop_repository_core:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "../shop_repository_core"
       relative: true

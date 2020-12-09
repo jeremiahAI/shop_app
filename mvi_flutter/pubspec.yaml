@@ -26,6 +26,8 @@ dependencies:
   kiwi: ^2.1.1
   repository:
     path: ../repository
+  shop_repository_core:
+    path: ../shop_repository_core
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
