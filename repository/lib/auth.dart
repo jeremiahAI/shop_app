@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_repository_core/shop_repository_core.dart';
@@ -14,7 +15,7 @@ class AuthImpl extends Auth {
   Timer _authTimer;
 
   @override
-  Stream<bool> get isAuthenticated => token.map((event) => event != null);
+  ValueStream<bool> get isAuthenticated => token.map((event) => event != null);
 
   Future<bool> tryAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
@@ -96,11 +97,11 @@ class AuthImpl extends Auth {
   }
 
   @override
-  Stream<String> get token =>
+  ValueStream<String> get token =>
       _expiry != null && _expiry.isAfter(DateTime.now()) && _token != null
           ? _token.stream
           : null;
 
   @override
-  Stream<String> get userId => _userId.stream;
+  ValueStream<String> get userId => _userId.stream;
 }

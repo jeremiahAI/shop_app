@@ -8,6 +8,8 @@ import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shop_repository_core/shop_repository_core.dart';
 
+export 'package:repository/auth.dart';
+
 class ReactiveProductsRepositoryImpl extends ReactiveProductsRepository {
   final BehaviorSubject<List<ProductEntity>> _productsSubject;
   bool _loaded = false;
