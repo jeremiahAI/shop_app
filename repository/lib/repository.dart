@@ -104,8 +104,15 @@ class ReactiveProductsRepositoryImpl extends ReactiveProductsRepository {
   }
 
   @override
-  Future<void> updateProduct(ProductEntity todo) {
-    // TODO: implement updateProduct
-    throw UnimplementedError();
+  Future<void> updateProduct(ProductEntity product) async {
+    var idx = _productsSubject.value
+        .indexWhere((element) => element.id == product.id);
+    if (idx >= 0) {
+      var newProd = product.copy(id: product.id)..creatorId = _creatorId;
+      patch("$productsFirebasePathUrl/${product.id}.json?auth=$_token",
+          body: newProd.toJson());
+
+      _productsSubject.add(_productsSubject.value..[idx] = newProd);
+    }
   }
 }
