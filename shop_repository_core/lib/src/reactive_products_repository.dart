@@ -12,9 +12,10 @@ import 'entities/product_entity.dart';
 abstract class ReactiveProductsRepository {
   Future<void> addNewProduct(ProductEntity product);
 
-  Future<void> deleteProduct(List<String> idList);
+  Future<void> deleteProduct(String id);
 
-  Stream<List<ProductEntity>> products();
+  Stream<List<ProductEntity>> get allProducts;
+  Stream<List<ProductEntity>> get userProducts;
 
   Future<void> updateProduct(ProductEntity todo);
 }
