@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shop_repository_core/shop_repository_core.dart';
 
@@ -11,11 +12,15 @@ class ReactiveProductsRepositoryImpl extends ReactiveProductsRepository {
   final BehaviorSubject<List<ProductEntity>> _productsSubject;
   bool _loaded = false;
 
-  String _creatorId,
-      _token; // Todo: Look into dependency injection for these fields
+  String get _creatorId => idStream.value;
+  String get _token => tokenStream.value;
 
-  ReactiveProductsRepositoryImpl(this._creatorId, this._token)
-      : _productsSubject = BehaviorSubject();
+  ValueStream<String> idStream, tokenStream;
+
+  ReactiveProductsRepositoryImpl(Auth auth)
+      : _productsSubject = BehaviorSubject(),
+        idStream = auth.userId,
+        tokenStream = auth.token;
 
   @override
   Future<void> addNewProduct(ProductEntity product) async {
